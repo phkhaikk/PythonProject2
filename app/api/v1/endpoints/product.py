@@ -1,3 +1,4 @@
+import json
 from typing import Any, List
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Request
@@ -5,6 +6,7 @@ from fastapi.encoders import jsonable_encoder
 from pydantic.networks import EmailStr
 from sqlalchemy.orm import Session
 from starlette import status
+from redis import Redis
 
 from app import crud, models, schemas
 from app.crud.crud_product import product as crud_product
@@ -18,6 +20,7 @@ from app.utils import send_new_account_email
 
 router = APIRouter()
 
+redis_client = Redis(host='localhost', port=6379,db=0)
 
 @router.get("/", response_model=List[ProductDb])
 def read_all_products(db: Session = Depends(deps.get_db), skip: int = 0, limit: int = 10):
@@ -39,8 +42,6 @@ def create_product(product: ProductCreate, db: Session = Depends(deps.get_db)):
     if db_product:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Product already exists")
     return crud_product.create_product(db=db, obj_in=product)
-
-
 
 
 @router.put("/{product_id}", response_model=ProductDb)
