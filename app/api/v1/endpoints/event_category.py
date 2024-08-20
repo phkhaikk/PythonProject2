@@ -18,36 +18,41 @@ from app.utils import send_new_account_email
 
 router = APIRouter()
 
-@router.get("/", response_model=EventCategoryDB)
-def get_event_categories(db: Session = Depends(deps.get_db), skip: int = 0, limit: int = 10):
-    event_cat = crud_event_cat.get_event_categories(db, skip=skip, limit=limit)
+
+@router.get("/", response_model=list[EventCategoryDB])
+def get_event_categories(skip: int = 0, limit: int = 10, db: Session = Depends(deps.get_db)):
+    event_cat = crud_event_cat.get_all_event_cat(db=db, skip=skip, limit=limit)
     return event_cat
+
 
 @router.get("/{event_category_id}", response_model=EventCategoryDB)
 def get_event_by_id(event_cat_id: int, db: Session = Depends(deps.get_db)):
-    event_cat = crud_event_cat.get_event_by_id(db=db, event_cat_id=event_cat_id)
+    event_cat = crud_event_cat.get_event_cat_by_id(db=db, event_cat_id=event_cat_id)
     if not event_cat:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event category not found")
     return event_cat
 
+
 @router.post("/", response_model=EventCategoryDB)
-def create_event_category(event_cat_in : EventCategoryCreate, db: Session = Depends(deps.get_db)):
-    event_cat = crud_event_cat.get_event_cat_by_name(db=db, event_cat_name = event_cat_in.name)
+def create_event_category(event_cat_in: EventCategoryCreate, db: Session = Depends(deps.get_db)):
+    event_cat = crud_event_cat.get_event_cat_by_name(db=db, event_cat_name=event_cat_in.name)
     if event_cat:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Event category already exists")
-    return crud_event_cat.create_event_category(db=db, event_cat_in=event_cat_in)
+    return crud_event_cat.create_event_cat(db=db, obj_in=event_cat_in)
+
 
 @router.put("/{event_category_id}", response_model=EventCategoryDB)
-def update_event_category(event_cat_id:int ,event_cat_in: EventCategoryUpdate, db: Session = Depends(deps.get_db)):
-    event_cat = crud_event_cat.get_event_by_id(db=db, event_cat_id=event_cat_id)
+def update_event_category(event_cat_id: int, event_cat_in: EventCategoryUpdate, db: Session = Depends(deps.get_db)):
+    event_cat = crud_event_cat.get_event_cat_by_id(db=db, event_cat_id=event_cat_id)
     if not event_cat:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Event category not found")
     return crud_event_cat.update_event_cat(db=db, db_event_cat=event_cat, obj_in=event_cat_in)
 
+
 @router.delete("/{event_category_id}", response_model=EventCategoryDB)
-def delete_event_category(event_cat_id:int , db: Session = Depends(deps.get_db)):
+def delete_event_category(event_cat_id: int, db: Session = Depends(deps.get_db)):
     event_cat = crud_event_cat.get_event_cat_by_id(db=db, event_cat_id=event_cat_id)
     if not event_cat:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Event category not found")
-    crud_event_cat.delete_event_category(db=db, event_cat_id=event_cat_id)
+    crud_event_cat.delete_event_cat(db=db, event_cat_id=event_cat_id)
     return event_cat
