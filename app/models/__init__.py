@@ -7,3 +7,5 @@ from .db_post import DbPost
 from .db_category import DbCategory
 from .db_product_category import DbProductCategory
 from .db_product import DbProduct
+from .db_event import DbEvent
+from .db_event_category import DBEventCategory
