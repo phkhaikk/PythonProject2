@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import (status, authen, users, category, post, product, product_category, event, event_category)
+from app.api.v1.endpoints import (status, authen, users, category, post, product, product_category, event, event_category, project_category, project)
 
 api_router = APIRouter()
 api_router.include_router(status.router, tags=["StarterAPI"])
@@ -19,4 +19,9 @@ api_router.include_router(product_category.router, prefix="/product_cat", tags=[
 api_router.include_router(event.router, prefix="/event", tags=["Event"])
 
 api_router.include_router(event_category.router, prefix="/event_cat", tags=["EventCategory"])
+
+
+api_router.include_router(project.router, prefix="/project", tags=["Project"])
+
+api_router.include_router(project_category.router, prefix="/project_cat", tags=["ProjectCategory"])
 

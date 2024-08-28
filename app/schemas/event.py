@@ -8,7 +8,7 @@ class EventBase(BaseModel):
     start_time: int
     end_time: int
     content: str
-    event_category: int
+    category_event: int
 
 class EventCreate(EventBase):
     pass

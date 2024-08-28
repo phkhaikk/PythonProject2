@@ -8,7 +8,6 @@ from starlette import status
 
 from app import crud, models, schemas
 from app.crud.crud_event import event as crud_event
-from app.models import db_event
 from app.schemas.event import EventDb, EventCreate, EventUpdate
 from app.api import deps
 
@@ -22,13 +21,13 @@ router = APIRouter()
 
 @router.get("/", response_model=List[EventDb])
 def get_events(skip: int = 0, limit: int = 0, db: Session = Depends(deps.get_db)):
-    db_events = crud_event.read_all_event(db=db, skip=skip, limit=limit)
-    if not db_events:
+    db_event = crud_event.read_all_event(db=db, skip=skip, limit=limit)
+    if not db_event:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No events found")
-    return db_events
+    return db_event
 
 
-@router.post("/{event_id}", response_model=EventDb)
+@router.get("/{event_id}", response_model=EventDb)
 def get_event_by_id(event_id: int, db: Session = Depends(deps.get_db)):
     db_event = crud_event.get_event_by_id(db=db, event_id=event_id)
     if not db_event:
@@ -37,16 +36,16 @@ def get_event_by_id(event_id: int, db: Session = Depends(deps.get_db)):
 
 
 @router.post("/", response_model=EventDb)
-def create_event(event_in=EventCreate, db: Session = Depends(deps.get_db)):
-    db_event = crud_event.get_event_by_name(db=db, event_name=event_in.event_name)
-    if db_event:
+def create_event(event_in: EventCreate, db: Session = Depends(deps.get_db)):
+    db_event_type = crud_event.get_event_by_name(db=db, event_title=event_in.event_name)
+    if db_event_type:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event already exists")
     return crud_event.create_event(db=db, obj_in=event_in)
 
 
 @router.put("/{event_id}", response_model=EventDb)
-def update_event(event_db=EventDb, event_in=EventUpdate, db: Session = Depends(deps.get_db)):
-    db_event = crud_event.get_event_by_id(db=db, event_id=event_in.id)
+def update_event(event_id_in: int, event_in: EventUpdate, db: Session = Depends(deps.get_db)):
+    db_event = crud_event.get_event_by_id(db=db, event_id=event_id_in)
     if not db_event:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
     return crud_event.update_event(db=db, db_event=db_event, obj_in=event_in)

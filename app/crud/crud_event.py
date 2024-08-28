@@ -8,18 +8,18 @@ from app.schemas.event import EventCreate, EventUpdate
 
 
 class CRUDEvent(CRUDBase[DbEventModel, EventCreate, EventUpdate]):
-    def read_all_event(self, db: Session, skip: int = 0, limit: int = 0):
+    def read_all_event(self, db: Session, skip: int = 0, limit: int = 10):
         return db.query(DbEventModel).offset(skip).limit(limit).all()
 
     def get_event_by_id(self, db: Session, event_id: int):
         return db.query(DbEventModel).filter(DbEventModel.id == event_id).first()
 
-    def get_event_by_name(self, db: Session, event_name: str):
-        return db.query(DbEventModel).filter(DbEventModel.name == event_name).first()
+    def get_event_by_name(self, db: Session, event_title: str):
+        return db.query(DbEventModel).filter(DbEventModel.event_name == event_title).first()
 
     def create_event(self, db: Session, obj_in: EventCreate):
         db_event = DbEventModel(event_name=obj_in.event_name, slug=obj_in.slug, start_time=obj_in.start_time,
-                                end_time=obj_in.end_time, category_event=obj_in.category_event)
+                                end_time=obj_in.end_time, content=obj_in.content, category_event=obj_in.category_event)
         db.add(db_event)
         db.commit()
         db.refresh(db_event)
@@ -30,17 +30,17 @@ class CRUDEvent(CRUDBase[DbEventModel, EventCreate, EventUpdate]):
         db_event.slug = obj_in.slug
         db_event.start_time = obj_in.start_time
         db_event.end_time = obj_in.end_time
-        db_event.category_event = obj_in.event_category
+        db_event.content = obj_in.content
+        db_event.category_event = obj_in.category_event
         db.commit()
         db.refresh(db_event)
         return db_event
 
-    def delete_event(self, db: Session, event_id: int, db_event: DbEventModel):
+    def delete_event(self, db: Session, event_id: int):
         db_event = db.query(DbEventModel).filter(DbEventModel.id == event_id).first()
         if db_event:
             db.delete(db_event)
             db.commit()
-            db.refresh(db_event)
         return db_event
 
 
