@@ -11,3 +11,4 @@ from .db_event import DbEvent
 from .db_event_category import DBEventCategory
 from .db_project_category import DBProjectCategory
 from .db_project import DBProject
+from .db_service import DBService

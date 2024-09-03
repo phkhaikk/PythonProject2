@@ -9,3 +9,4 @@ from .product import ProductDb, ProductCreate, ProductUpdate, ProductInDBBase, P
 from .product_category import ProductCategoryDB, ProductCategoryCreate, ProductCategoryUpdate, ProductCategoryInDB, ProductCategoryBase
 from .event_category import EventCategoryDB, EventCategoryCreate, EventCategoryUpdate, EventCategoryInDBBase, EventCategoryBase
 from .event import EventDb, EventCreate, EventUpdate, EventInDBBase, EventBase
+from .service import ServiceInDBBase, ServiceBase, ServiceDB, ServiceCreate, ServiceUpdate
